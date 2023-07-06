@@ -1,3 +1,4 @@
+
 local _ENV_metatable = getmetatable(_ENV) or {}
 
 _PROMPT = _ENV["_PROMT"] or "> "  -- Prevent from changing prompt on interactive mode
@@ -11,7 +12,28 @@ function _ENV_metatable.__index (self,name)
     return content
   end
 
-  return setmetatable({tag=name}, {
+  return setmetatable({
+    tag=name,
+    extends =
+      function (self,descriptor)
+        local custom_template = _ENV["Template"]
+        _ENV["Template"] = nil
+        local element_metatable = getmetatable(_ENV["Template"])
+        local element = {tag = rawget(self,"tag"),hard_properties={}}
+        Template = custom_template
+
+        for property, value in pairs(descriptor) do
+          if type(property) ~= "number" and type(value) == "string" then
+            element.hard_properties[property] = tostring(value):gsub("\"","&quot;")
+          else
+            element.hard_properties[property] = value
+          end
+        end
+
+        return setmetatable(element,element_metatable)
+      end
+    ;
+  }, {
     __mul =
       function (self,number)
         local block = {}
@@ -86,6 +108,20 @@ function _ENV_metatable.__index (self,name)
           end
         end
 
+        self.hard_properties = self.hard_properties or {}
+        self.childrens       = self.hard_properties.childrens or {}
+        self.childrens.first = self.childrens.first or {}
+        self.childrens.last  = self.childrens.last  or {}
+        self.hard_properties.childrens = nil
+        self.bind = nil
+
+        for property, value in pairs(self.hard_properties) do
+          if self.properties[property] == nil then
+            self.properties[property] = value
+            self.hard_properties[property] = nil
+          end
+        end
+
         for property, value in pairs(self.properties or {}) do
           if type(property) ~= "number" then
             if type(value) and getmetatable(value) == nil and property:sub(1,2) == "on" then
@@ -100,9 +136,8 @@ function _ENV_metatable.__index (self,name)
               else
                   value = table.concat(value,";"):gsub("\"","&quot;")
               end
-              
             end
-          html = html.." "..property.."=\""..value:gsub("\"","&quot;").."\""
+            html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..value:gsub("\"","&quot;").."\""
           end
         end
 
@@ -112,7 +147,15 @@ function _ENV_metatable.__index (self,name)
 
         html = html..">"
 
+        for i, children in ipairs(self.childrens.first or {}) do
+          html = html..tostring(children)
+        end
+
         for i, children in ipairs(self.properties or {}) do
+          html = html..tostring(children)
+        end
+
+        for i, children in ipairs(self.childrens.last or {}) do
           html = html..tostring(children)
         end
 
