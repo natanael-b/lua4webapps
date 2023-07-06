@@ -1,5 +1,3 @@
-
-
 local _ENV_metatable = getmetatable(_ENV) or {}
 
 _PROMPT = _ENV["_PROMT"] or "> "  -- Prevent from changing prompt on interactive mode
@@ -136,38 +134,17 @@ function _ENV_metatable.__index (self,name)
           end
         end
 
-        for property, value in pairs(self.properties or {}) do
-          if type(property) ~= "number" then
-            if type(value) and getmetatable(value) == nil and property:sub(1,2) == "on" then
-              if type(__JAVASCRIPT__) == "string" then
-                local function_name = "when_"..property:sub(3,-1).."_on_"..self.properties.id.."()"
-                __JAVASCRIPT__ = __JAVASCRIPT__.."\n\nfunction "..function_name.." {\n  "..table.concat(value,";\n  ").."\n}"
-                value = function_name..";"
-              elseif self.bind[property] then
-
-              else
-                  value = table.concat(value,";"):gsub("\"","&quot;")
-              end
-            end
-            html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..tostring(value):gsub("\"","&quot;").."\""
-          end
-        end
-
-        if (#(self.properties or {}) == 0) and self.tag:lower() ~= "script" and self.tag:lower() ~= "html" then
-          return html.."/>"
-        end
-
-        html = html..">"
+        local innerHTML = ""
 
         for j, content in ipairs {self.childrens.first,self.properties,self.childrens.last} do
           for i, children in ipairs(content or {}) do
             if content == self.properties then
-              html = html..tostring(children)
+              innerHTML = innerHTML..tostring(children)
               goto skip
             end
 
             if getmetatable(children) or type(children) == "string" then
-              html = html..tostring(children)
+              innerHTML = innerHTML..tostring(children)
             else
               local bindings        = children.bindings
               local element         = children.element
@@ -188,15 +165,38 @@ function _ENV_metatable.__index (self,name)
               for children_property, parent_property in pairs(bindings) do
                 local value = self.properties[parent_property]
                 if value ~= nil then
+                  self.properties[parent_property] = nil
                   obj.properties[children_property] = tostring(value)
                 end
               end
-              html = html..tostring(setmetatable(obj,getmetatable(element)))
+              innerHTML = innerHTML..tostring(setmetatable(obj,getmetatable(element)))
             end
-
             ::skip::
           end
         end
+
+        for property, value in pairs(self.properties or {}) do
+          if type(property) ~= "number" then
+            if type(value) and getmetatable(value) == nil and property:sub(1,2) == "on" then
+              if type(__JAVASCRIPT__) == "string" then
+                local function_name = "when_"..property:sub(3,-1).."_on_"..self.properties.id.."()"
+                __JAVASCRIPT__ = __JAVASCRIPT__.."\n\nfunction "..function_name.." {\n  "..table.concat(value,";\n  ").."\n}"
+                value = function_name..";"
+              elseif self.bind[property] then
+
+              else
+                  value = table.concat(value,";"):gsub("\"","&quot;")
+              end
+            end
+            html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..tostring(value):gsub("\"","&quot;").."\""
+          end
+        end
+
+        if (#(self.properties or {}) == 0) and self.tag:lower() ~= "script" and self.tag:lower() ~= "html" and #self.childrens.first+#self.childrens.first == 0 then
+          return html.."/>"
+        end
+
+        html = html..">"..innerHTML
 
         if self.tag:lower() == "body" and __JAVASCRIPT__ ~= "" then
           html = html..tostring(script("\n"..__JAVASCRIPT__.."\n\n"))
