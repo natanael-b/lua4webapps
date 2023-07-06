@@ -159,16 +159,43 @@ function _ENV_metatable.__index (self,name)
 
         html = html..">"
 
-        for i, children in ipairs(self.childrens.first or {}) do
-          html = html..tostring(children)
-        end
+        for j, content in ipairs {self.childrens.first,self.properties,self.childrens.last} do
+          for i, children in ipairs(content or {}) do
+            if content == self.properties then
+              html = html..tostring(children)
+              goto skip
+            end
 
-        for i, children in ipairs(self.properties or {}) do
-          html = html..tostring(children)
-        end
+            if getmetatable(children) or type(children) == "string" then
+              html = html..tostring(children)
+            else
+              local bindings        = children.bindings
+              local element         = children.element
+              local tag             = element.tag
+              local properties      = element.properties
+              local hard_properties = element.hard_properties
+  
+              local obj = {
+                tag = tag,
+                properties = {},
+                hard_properties = hard_properties
+              }
+  
+              for property, value in pairs(properties) do
+                obj.properties[property] = value
+              end
+  
+              for children_property, parent_property in pairs(bindings) do
+                local value = self.properties[parent_property]
+                if value ~= nil then
+                  obj.properties[children_property] = tostring(value)
+                end
+              end
+              html = html..tostring(setmetatable(obj,getmetatable(element)))
+            end
 
-        for i, children in ipairs(self.childrens.last or {}) do
-          html = html..tostring(children)
+            ::skip::
+          end
         end
 
         if self.tag:lower() == "body" and __JAVASCRIPT__ ~= "" then
