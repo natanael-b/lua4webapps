@@ -127,17 +127,28 @@ function _ENV_metatable.__index (self,name)
             if type(value) and getmetatable(value) == nil and property:sub(1,2) == "on" then
               if type(__JAVASCRIPT__) == "string" then
                 local old_uuid = tostring(UniqueID)
-                self.id = tostring(self.properties.id or UniqueID())
+                self.properties.id = tostring(self.properties.id or UniqueID())
                 rawset(UniqueID,"value",old_uuid)
+                break
+              end
+            end
+          end
+        end
 
-                local function_name = "when_"..property:sub(3,-1).."_on_"..self.id.."()"
+        for property, value in pairs(self.properties or {}) do
+          if type(property) ~= "number" then
+            if type(value) and getmetatable(value) == nil and property:sub(1,2) == "on" then
+              if type(__JAVASCRIPT__) == "string" then
+                local function_name = "when_"..property:sub(3,-1).."_on_"..self.properties.id.."()"
                 __JAVASCRIPT__ = __JAVASCRIPT__.."\n\nfunction "..function_name.." {\n  "..table.concat(value,";\n  ").."\n}"
                 value = function_name..";"
+              elseif self.bind[property] then
+
               else
                   value = table.concat(value,";"):gsub("\"","&quot;")
               end
             end
-            html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..value:gsub("\"","&quot;").."\""
+            html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..tostring(value):gsub("\"","&quot;").."\""
           end
         end
 
