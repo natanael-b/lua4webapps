@@ -1,4 +1,5 @@
 
+
 local _ENV_metatable = getmetatable(_ENV) or {}
 
 _PROMPT = _ENV["_PROMT"] or "> "  -- Prevent from changing prompt on interactive mode
@@ -187,7 +188,18 @@ function _ENV_metatable.__index (self,name)
           return __HTML__
         end
 
-        return self
+        local obj = {
+          tag = self.tag,
+          properties = self.properties,
+          extends = self.extends,
+          hard_properties = {}
+        }
+
+        for property, value in pairs(self.hard_properties or {}) do
+          obj.hard_properties[property] = value
+        end
+
+        return setmetatable(obj,getmetatable(self))
       end
     ;
   })
