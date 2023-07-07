@@ -88,9 +88,13 @@ function _ENV_metatable.__index (self,name)
         
         self.properties = self.properties or {}
 
+        if self.tag:lower() == "html" and type(_ENV["lang"]) == "string" then
+          self.properties.lang = _ENV["lang"]
+        end
+
         if self.tag:lower() == "head"  then
           if _ENV["DISABLE_UTF8"] ~= true then
-            self.properties[#self.properties+1] = meta { charset="utf8" }
+            table.insert(self.properties,1,meta { charset="utf8" })
           end
 
           if _ENV["DISABLE_VIEWPORT"] ~= true then
@@ -158,11 +162,11 @@ function _ENV_metatable.__index (self,name)
                 hard_properties = hard_properties
               }
   
-              for property, value in pairs(properties) do
+              for property, value in pairs(properties or {}) do
                 obj.properties[property] = value
               end
   
-              for children_property, parent_property in pairs(bindings) do
+              for children_property, parent_property in pairs(bindings or {}) do
                 local value = self.properties[parent_property]
                 if value ~= nil then
                   self.properties[parent_property] = nil
