@@ -96,6 +96,13 @@ function _ENV_metatable.__index (self,name)
           if _ENV["DISABLE_UTF8"] ~= true then
             table.insert(self.properties,1,meta { charset="utf8" })
           end
+          
+          if _ENV["DISABLE_GENERATOR"] ~= true then
+            self.properties[#self.properties+1] = meta {
+                                                         name="generator",
+                                                         content="lua-wpp"
+                                                       }
+          end
 
           if _ENV["DISABLE_VIEWPORT"] ~= true then
             self.properties[#self.properties+1] = meta {
