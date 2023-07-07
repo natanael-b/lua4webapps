@@ -88,8 +88,8 @@ function _ENV_metatable.__index (self,name)
         
         self.properties = self.properties or {}
 
-        if self.tag:lower() == "html" and type(_ENV["lang"]) == "string" then
-          self.properties.lang = _ENV["lang"]
+        if self.tag:lower() == "html" and type(_ENV["Language"]) == "string" then
+          self.properties.lang = _ENV["Language"]
         end
 
         if self.tag:lower() == "head"  then
