@@ -13,6 +13,14 @@ end
 local Pages = Pages
 _ENV["Pages"] = nil
 
+local __pairs = pairs
+local empty_ENV = {}
+for k,v in pairs(_ENV) do
+    empty_ENV[k] = v
+end
+local table_extends = table.extends
+local table_metatable = getmetatable(table)
+
 for i, page in ipairs(Pages) do
     print("Generating "..i.."/"..#Pages..": "..page..".html")
 
@@ -24,6 +32,14 @@ for i, page in ipairs(Pages) do
     if #path > 1 then
         mkdir(Pages.output,path)
     end
+
+    for k,v in __pairs(empty_ENV) do
+        _ENV[K] = v
+    end
+
+    pairs = __pairs
+    table.extends = table_extends
+    setmetatable(table,table_metatable)
 
     require (Pages.sources.."."..page:gsub("/","."))
 
