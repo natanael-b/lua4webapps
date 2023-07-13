@@ -46,12 +46,16 @@ html {
 
 Com custo zero de abstração já que a página final será um HTML puro
 
-# Como se usa?
+# Como se instala?
 
 Com um interpretador Lua instalado e configurado no seu computador, adicione o `lua-wpp`:
 
 1. Clique em <a href="https://github.com/natanael-b/lua-wpp/archive/refs/heads/framework.zip">baixar</a>
 2. Extraia o conteúdo do `zip` para alguma pasta
+
+Simples assim, a instalação é tão simples quanto baixar e extraír um arquivo `zip` :)
+
+# Como se usa?
 
 Na pasta que você extraiu:
 
@@ -70,6 +74,21 @@ Pages = {
 require "lua-wpp-framework"
 ```
 
+Agora crie uma pasta chamada "lua" e nela um arquivo `index.lua` com o conteúdo:
 
+```lua
+html {
+  head {
+    title 'Demonstração'
+  };
+  body {
+    h1 {
+      style = "padding:9pt; background-color: #3498db; color: #ecf0f1";
+      'Olá mundo'
+    } * 7
+  }
+}
+```
 
+Ao rodar `lua5.4 Project.lua` você vai ter uma página construída em `www`
 
