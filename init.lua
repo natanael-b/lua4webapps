@@ -22,17 +22,6 @@ local table_extends = table.extends
 local table_metatable = getmetatable(table)
 
 for i, page in ipairs(Pages) do
-    print("Generating "..i.."/"..#Pages..": "..page..".html")
-
-    local path = {}
-    for dir in page:gmatch("[^/]+") do
-        path[#path+1] = dir
-    end
-    
-    if #path > 1 then
-        mkdir(Pages.output,path)
-    end
-
     for k,v in __pairs(empty_ENV) do
         _ENV[K] = v
     end
@@ -40,6 +29,15 @@ for i, page in ipairs(Pages) do
     pairs = __pairs
     table.extends = table_extends
     setmetatable(table,table_metatable)
+
+    print("Generating "..i.."/"..#Pages..": "..page..".html")
+
+    local path = {}
+    for dir in page:gmatch("[^/]+") do
+        path[#path+1] = dir
+    end
+
+    local _ = #path > 1 and mkdir(Pages.output,path) or mkdir(Pages.output,{})
 
     require (Pages.sources.."."..page:gsub("/","."))
 
