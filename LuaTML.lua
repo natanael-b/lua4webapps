@@ -245,6 +245,10 @@ end
 
 setmetatable(_ENV,_ENV_metatable)
 
+table.tag='table'
+table.extends = rawget(_ENV[{}],"extends")
+setmetatable(table,getmetatable(_ENV[{}]))
+
 UniqueID = {}
 UniqueID = setmetatable(UniqueID,{
   __index = UniqueID,
