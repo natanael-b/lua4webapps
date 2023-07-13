@@ -15,12 +15,7 @@ function _ENV_metatable.__index (self,name)
     tag=name,
     extends =
       function (self,descriptor)
-        local custom_template = _ENV["Template"]
-        _ENV["Template"] = nil
-        local element_metatable = getmetatable(_ENV["Template"])
         local element = {tag = rawget(self,"tag"),hard_properties={}}
-        Template = custom_template
-
         for property, value in pairs(descriptor) do
           if type(property) ~= "number" and type(value) == "string" then
             element.hard_properties[property] = tostring(value):gsub("\"","&quot;")
@@ -28,8 +23,7 @@ function _ENV_metatable.__index (self,name)
             element.hard_properties[property] = value
           end
         end
-
-        return setmetatable(element,element_metatable)
+        return setmetatable(element,getmetatable(_ENV[{}]))
       end
     ;
   }, {
