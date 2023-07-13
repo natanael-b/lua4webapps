@@ -78,15 +78,17 @@ function _ENV_metatable.__index (self,name)
 
     __tostring =
       function (self)
+        self.tag = self.tag:lower()
+
         local html = "<"..self.tag
         
         self.properties = self.properties or {}
 
-        if self.tag:lower() == "html" and type(_ENV["Language"]) == "string" then
+        if self.tag == "html" and type(_ENV["Language"]) == "string" then
           self.properties.lang = _ENV["Language"]
         end
 
-        if self.tag:lower() == "head"  then
+        if self.tag == "head"  then
           if _ENV["DISABLE_UTF8"] ~= true then
             table.insert(self.properties,1,meta { charset="utf8" })
           end
@@ -144,7 +146,23 @@ function _ENV_metatable.__index (self,name)
         for j, content in ipairs {self.childrens.first,self.properties,self.childrens.last} do
           for i, children in ipairs(content or {}) do
             if content == self.properties then
-              innerHTML = innerHTML..tostring(children)
+              if type(children) == "table" and getmetatable(children) == nil and self.tag == "table" then
+                local result = ""
+                for i,element  in ipairs(children) do
+                  if type(element) == "table" then
+                    if element.tag == "td" or element.tag == "th" then
+                      result = result..tostring(element)
+                    else
+                      result = result.."<td>"..tostring(element).."</td>"
+                    end
+                  else
+                    result = result.."<td>"..tostring(element).."</td>"
+                  end
+                end
+                innerHTML = innerHTML.."<tr>"..result.."</tr>"
+              else
+                innerHTML = innerHTML..tostring(children)
+              end
               goto skip
             end
 
