@@ -162,4 +162,40 @@ table {
 }
 ```
 
-## 
+## Componentes reutilizaveis
+
+É possível criar componentes reutilizáveis isso permite um código mais legível e fácil de manter do lado Lua, a criação de um novo componente é feita através do método `extends` que está presente em todos os elementos, um componente permite alterar inclusive a lógica de funcionamento descrita acima, note que como os componentes vão ser pré renderizados então não deve existir sobrecarga de recurso, funciona como um copiar e colar inteligente. Para ilustar o conceito básico observe o exemplo a seguir, ele cria um componente chamado `exemplo` feito a partir de uma `div`, que injeta `minha-classe` na propriedade `class` e que adiciona um componente `p` contendo o texto "Esse vem antes" antes dos elementos filhos de `exemplo` e outro elemento `p` dessa vez com o texto "Esse vem depois":
+
+```lua
+exemplo = div:extends {
+  class = "minha-classe",
+  childrens = {
+    first = {
+       p "Esse vem antes"
+    },
+    last = {
+       p "Esse vem depois"
+    }
+  }
+}
+```
+
+Note que elemento `p` "Esse vem antes" está dentro da lista `first` que está dentro da lista que a propriedade `childrens` recebe, a utilização do componente é igual as TAGs normais:
+
+```lua
+exemplo {
+  class = "teste",
+  id = "experimento",
+  p "Esse vem no meio"
+}
+```
+
+Irá gerar o seguinte HTML:
+
+```html
+<div class="minha-classe teste" id="experimento">
+  <p>Esse vem antes</p>
+  <p>Esse vem no meio</p>
+  <p>Esse vem depois</p>
+</div>
+```
