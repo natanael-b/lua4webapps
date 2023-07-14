@@ -118,10 +118,12 @@ function _ENV_metatable.__index (self,name)
         self.childrens       = self.hard_properties.childrens or {}
         self.childrens.first = self.childrens.first or {}
         self.childrens.last  = self.childrens.last  or {}
+
         self.hard_properties.childrens = nil
-        self.bind = nil
+        local hard_properties = {}
 
         for property, value in pairs(self.hard_properties) do
+          hard_properties[property] = value
           if self.properties[property] == nil then
             self.properties[property] = value
             self.hard_properties[property] = nil
@@ -205,8 +207,6 @@ function _ENV_metatable.__index (self,name)
                 local function_name = "when_"..property:sub(3,-1).."_on_"..self.properties.id.."()"
                 __JAVASCRIPT__ = __JAVASCRIPT__.."\n\nfunction "..function_name.." {\n  "..table.concat(value,";\n  ").."\n}"
                 value = function_name..";"
-              elseif self.bind[property] then
-
               else
                   value = table.concat(value,";"):gsub("\"","&quot;")
               end
@@ -214,6 +214,12 @@ function _ENV_metatable.__index (self,name)
             html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..tostring(value):gsub("\"","&quot;").."\""
           end
         end
+
+        for property, value in pairs(hard_properties) do
+          self.hard_properties[property] = value
+        end
+      
+        self.hard_properties.childrens = self.childrens
 
         if (#(self.properties or {}) == 0) and self.tag:lower() ~= "script" and self.tag:lower() ~= "html" and #self.childrens.first+#self.childrens.first == 0 then
           return html.."/>"
