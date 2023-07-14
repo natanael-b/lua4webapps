@@ -199,3 +199,97 @@ Irá gerar o seguinte HTML:
   <p>Esse vem depois</p>
 </div>
 ```
+
+Agora que você viu o básico da criação de componentes, podemos ver o recurso mais poderoso da criação de componentes os `bindings`, bindings ligam uma propriedade do componente a uma propriedade de um dos filhos (seja em `first` ou em `last`, ao invés de passar o componente diretamente como fizemos no exemplo anterior, criamos uma tabela Lua com os campos `element` e `bindings` usa a seguinte sintaxe:
+
+```lua
+{
+  element = tag {
+    class = 'exemplo'
+  },
+  bindings = {
+    ['propriedade do filho'] = 'propriedade-do-componente'
+  }
+}
+```
+
+Vamos recriar o `checkbox` do HTML 4 passando a propriedade `identificador` e ligar ela com o `id` do elemento filho:
+
+```lua
+checkbox = label:extends {
+  childrens = {
+    first = {
+       {
+          element = input {
+            type = "checkbox"
+          },
+          bindings = {
+            ['id'] = 'identificador'
+          }
+       }
+    }
+  }
+}
+```
+
+Testando:
+
+```lua
+checkbox {
+  identificador = "experimento",
+  "Esse vem no meio"
+}
+```
+
+Irá gerar o seguinte HTML:
+
+```html
+<label>
+  <input id="experimento" type="checkbox">
+  Marque me
+</label>
+```
+
+Algumas observações e dicas:
+
+1. As propriedades do componente e do filho podem ser as mesmas
+2. Você pode extender componentes dentro  de `first` e `last`
+3. Você pode definir a posição do conteúdo, para  fazer com que o 2 filho de um elemento seja a propriedade `text` do componente faça:
+
+```lua
+exemplo = div:extends {
+  childrens = {
+    first = {
+       {
+          element = p {
+            'Olá, ', 'Esse é o segundo filho', ', tudo bem?'
+          },
+          bindings = {
+            [2] = 'text'
+          }
+       }
+    }
+  }
+}
+```
+
+Testando
+
+```lua
+exemplo {
+  text = "Natanael"
+}
+```
+
+Saída: 
+
+```html
+<div>
+  <p>Olá, Natanael, tudo bem?</p>
+</div>
+```
+
+> **Aviso** <br>
+> 1. Lua é uma linguagem baseada em indice 1, o indice 3 representa o terceiro elemento <br>
+> 2. Coloque todos os filhos até chegar o índice desejado, do contrário, o valor da propriedade não será transmitido
+
