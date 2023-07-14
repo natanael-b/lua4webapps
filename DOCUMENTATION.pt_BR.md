@@ -20,14 +20,14 @@ require "lua-wpp-framework"
 ```
 
 Onde:
-  - `pt_BR` é o idioma da página ela irá definir a propridade `lang` da tag `html` de todas as páginas do projeto
+  - `pt_BR` é o idioma da página ela irá definir a propriedade `lang` da tag `html` de todas as páginas do projeto
   - `sources` indica onde o `Lua WPP` irá procurar as páginas Lua para gerar o HTML final
   - `output` é onde os arquivos HTML serão criados
   - `index` e `diretorio/pagina` são os arquivos que fazem parte desse projeto, note que
     - Os arquivos devem possuir a extensão `.lua`
     - Na listagem não pode ter extensão
     - Na listagem devem estar delimitados por aspas simples ou duplas
-    - Os items da lista são separados por `,`
+    - Os itens da lista são separados por `,`
    
 ## O básico
 
@@ -116,8 +116,50 @@ Pra intercalando valores a elementos use o sinal de circunflexo (`^`) a frente d
 
 ```lua
 ol {
-  li ^ {"Item 1","Item 2","Item 3","Item 4"}
+  li ^ {"Item 1","Item 2", b "Item 3","Item 4"}
 }
 ```
 
-A sintaxe da lista é uma tabela Lua delitada por chaves e os elementos são textos (`strings` em Lua) 
+A sintaxe da lista é uma tabela Lua delimitada por chaves e os elementos podem ser delimitados por aspas simples (`'`) ou duplas (`"`) ou ser elementos HTML
+
+## Tabelas
+
+`Lua WPP` possui integração com as tabelas nativas Lua permitindo tando a abordagem tradicional com as TAGs HTML:
+
+```lua
+table {
+  tr {
+    td 'A1', td 'B1', td 'C1',
+  },
+  tr {
+    td 'A2', td 'B2', td 'C2',
+  },
+  tr {
+    td 'A3', td 'B3', td 'C3',
+  },
+}
+```
+
+Quanto usando a notação Lua:
+
+```lua
+table {
+  {'A1', 'B1', 'C1'},
+  {'A2', 'B2', 'C2'},
+  {'A3', 'B3', 'C3'},
+}
+```
+
+É possível utilizar combinações, mesclando elementos HTML e a sintaxe Lua nativa:
+
+```lua
+table {
+  tr {
+    td 'A1', td 'B1', td 'C1',
+  },
+  {'A2', b 'B2',  'C2'},
+  {'A3',   'B3', i'C3'},
+}
+```
+
+## 
