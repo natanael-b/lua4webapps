@@ -1,4 +1,5 @@
-require "lua-wpp-framework.LuaTML"
+local Pages = Pages
+_ENV["Pages"] = nil
 
 local function mkdir(output,path)
     -- Windows
@@ -10,38 +11,54 @@ local function mkdir(output,path)
     os.execute("mkdir -p '"..output.."/"..table.concat(path,"/",1,#path-1).."' >/dev/null 2>&1")
 end
 
-local Pages = Pages
-_ENV["Pages"] = nil
+local original_ENV  = {}
+local original_libs = {}
+local original_meta = {}
 
-local __pairs = pairs
-local empty_ENV = {}
-for k,v in pairs(_ENV) do
-    empty_ENV[k] = v
-end
-local table_extends = table.extends
-local table_metatable = getmetatable(table)
+for name,value in pairs(_ENV) do
+    if type(value) == "table" then
+        original_libs[name] = {}
+        local lib = original_libs[name]
+        for name, _value in pairs(value) do
+            lib[name] = _value
+        end
 
-for i, page in ipairs(Pages) do
-    for k,v in __pairs(empty_ENV) do
-        _ENV[K] = v
+        original_meta[name] = {}
+        lib = original_meta[name]
+        for name, _value in pairs(getmetatable(value) or {}) do
+            lib[name] = _value
+        end
+    else
+        original_ENV[name] = value
     end
+end
 
-    pairs = __pairs
-    table.extends = table_extends
-    setmetatable(table,table_metatable)
-
+for i, page in original_ENV.ipairs(Pages) do
     print("Generating "..i.."/"..#Pages..": "..page..".html")
 
-    local path = {}
-    for dir in page:gmatch("[^/]+") do
-        path[#path+1] = dir
+    original_ENV.setmetatable(_ENV,{})
+
+    for variable in pairs(_ENV) do
+        _ENV[variable] = nil
     end
 
-    local _ = #path > 1 and mkdir(Pages.output,path) or mkdir(Pages.output,{})
+    for name, fn in original_ENV.pairs(original_ENV) do
+        _ENV[name] = fn
+    end
 
-    require (Pages.sources.."."..page:gsub("/","."))
+    for name, lib in original_ENV.pairs(original_libs) do
+        _ENV[name] = {}
+        local newlib = _ENV[name]
+        for name_, fn in pairs(lib) do
+            newlib[name_] = fn
+            original_ENV.setmetatable(newlib,nil)
+        end
+    end
 
-    local html_file = io.open(Pages.output.."/"..page..".html","w")
+    original_ENV.require "lua-wpp-framework.LuaTML"
+    original_ENV.require (Pages.sources.."."..page:gsub("/","."))
+
+    local html_file = original_libs["io"].open(Pages.output.."/"..page..".html","w")
 
     if html_file then
         html_file:write(type(__HTML__) == "string" and __HTML__ or "")
