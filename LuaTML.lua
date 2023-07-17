@@ -134,12 +134,6 @@ function _ENV_metatable.__index (self,name)
                                                          content="width=device-width,initial-scale=1.0"
                                                        }
           end
-
-          if type(__JAVASCRIPT_FILE__) == "string" then
-            self.properties[#self.properties+1] = script {
-              scr=__JAVASCRIPT_FILE__
-            }
-          end
         end
 
         self.hard_properties = self.hard_properties or {}
@@ -303,4 +297,3 @@ setmetatable(_ENV,_ENV_metatable)
 table.tag='table'
 table.extends = rawget(_ENV[{}],"extends")
 setmetatable(table,getmetatable(_ENV[{}]))
-
