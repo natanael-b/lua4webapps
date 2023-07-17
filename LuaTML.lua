@@ -205,7 +205,7 @@ function _ENV_metatable.__index (self,name)
             if type(value) and getmetatable(value) == nil and property:sub(1,2) == "on" then
               if type(__JAVASCRIPT__) == "string" then
                 local function_name = "when_"..property:sub(3,-1).."_on_"..self.properties.id.."()"
-                __JAVASCRIPT__ = __JAVASCRIPT__.."\n\nfunction "..function_name.." {\n"
+                __JAVASCRIPT__ = __JAVASCRIPT__.."\n\n\nfunction "..function_name.." {\n"
                 __JAVASCRIPT__ = __JAVASCRIPT__.."  var self = event.target;\n\n  "
                 __JAVASCRIPT__ = __JAVASCRIPT__..table.concat(value,";\n  ").."\n}"
                 value = function_name..";"
@@ -230,13 +230,14 @@ function _ENV_metatable.__index (self,name)
         html = html..">"..innerHTML
 
         if self.tag:lower() == "body" and __JAVASCRIPT__ ~= "" then
-          html = html..tostring(script("\n"..__JAVASCRIPT__.."\n\n"))
+          html = html..tostring(script{type="text/javascript","\n"..__JAVASCRIPT__.."\n\n"})
           __JAVASCRIPT__ = ""
         end
 
         -- No body TAG, but has Javascript events, we need to fix this weird HTML
         if __JAVASCRIPT__ ~= "" and self.tag:lower() == "html" then
-          html = html..tostring(body{script("\n"..__JAVASCRIPT__.."\n\n")})
+          html = html.."<body>"..tostring(script{type="text/javascript","\n"..__JAVASCRIPT__.."\n\n"}).."</body>"
+          __JAVASCRIPT__ = ""
         end
 
         return html.."</"..self.tag..">"
