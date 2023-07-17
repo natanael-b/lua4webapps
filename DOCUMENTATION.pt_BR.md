@@ -372,3 +372,17 @@ function when_click_on_example() {
 ```
 
 Note que a nomeação das funções dependem diretamente na propriedade `id` do elemento seguindo o padrão `when_[evento]_on_[id do elemento]`, caso um elemento HTML possua eventos Javascript porém não possua um `id` um `id` aleatório será gerado
+
+## Variáveis especiais
+
+Você pode controlar o comportarmento do `Lua WPP` passando o valor `true` para as seguintes variáveis:
+
+| Variável            | O que faz?                                                                                  |
+|---------------------|---------------------------------------------------------------------------------------------|
+| `DISABLE_UTF8`      | Desativa a injeção do [`charset`](https://www.w3schools.com/tags/att_meta_charset.asp)      |
+| `DISABLE_VIEWPORT`  | Desativa a injeção do [`viewport`](https://www.w3schools.com/css/css_rwd_viewport.asp) 1:1  |
+| `DISABLE_GENERATOR` | Desativa a injeção do [`generator`](https://www.w3schools.com/jsref/prop_meta_name.asp))    |
+
+> **Nota:** <br>
+> O uso dessas variáveis pode levar a exibição incorreta de caracteres ou de quebras de visualização não sendo
+> recomendada a sua utilização estando presente apenas para casos excepcionais
