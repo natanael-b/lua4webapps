@@ -324,3 +324,51 @@ Saída:
 </div>
 ```
 
+## Separação de eventos
+
+`Lua WPP` mapeia as propriedades com o nome começado em "on" e adiciona em funções em uma TAG script, isso permite uma maior legibilidade do código no HTML gerado, considere o exemplo:
+
+```lua
+html {
+   head {
+      title "teste"
+   },
+   body {
+      button {
+         id = "example",
+         "Click me!",
+         onclick = {
+            "alert(self);"
+         }
+      }
+   }
+}
+```
+
+Irá gerar o seguinte HTML:
+
+```html
+<!DOCTYPE html>
+<html lang="pt_BR">
+  <head>
+    <meta charset="utf8" />
+    <title>teste</title>
+    <meta name="generator" content="lua-wpp" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  </head>
+  <body>
+    <button id="example" onclick="when_click_on_example();">
+      Click me!
+    </button>
+    <script type="text/javascript">
+function when_click_on_example() {
+  var self = event.target;
+
+  alert(self);
+}
+    </script>
+  </body>
+</html>
+```
+
+Note que a nomeação das funções dependem diretamente na propriedade `id` do elemento seguindo o padrão `when_[evento]_on_[id do elemento]`, caso um elemento HTML possua eventos Javascript porém não possua um `id` um `id` aleatório será gerado
