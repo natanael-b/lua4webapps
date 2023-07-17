@@ -1,3 +1,31 @@
+local UniqueID = {}
+UniqueID = setmetatable(UniqueID,{
+  __index = UniqueID,
+  __call =
+    function (self)
+      local result = ""
+      for i=1,9 do
+        if math.random(1,2) == 1 then
+          result = result..string.char(math.random(97, 97 + 25))
+        else
+          result = result..string.char(math.random(65, 65 + 25))
+        end
+      end
+      self.value = result
+      return self
+    end
+  ;
+  __tostring =
+    function (self)
+      return self.value
+    end
+  ;
+})
+
+UniqueID()
+
+
+
 local _ENV_metatable = getmetatable(_ENV) or {}
 
 _PROMPT = _ENV["_PROMT"] or "> "  -- Prevent from changing prompt on interactive mode
@@ -276,28 +304,3 @@ table.tag='table'
 table.extends = rawget(_ENV[{}],"extends")
 setmetatable(table,getmetatable(_ENV[{}]))
 
-UniqueID = {}
-UniqueID = setmetatable(UniqueID,{
-  __index = UniqueID,
-  __call =
-    function (self)
-      local result = ""
-      for i=1,9 do
-        if math.random(1,2) == 1 then
-          result = result..string.char(math.random(97, 97 + 25))
-        else
-          result = result..string.char(math.random(65, 65 + 25))
-        end
-      end
-      self.value = result
-      return self
-    end
-  ;
-  __tostring =
-    function (self)
-      return self.value
-    end
-  ;
-})
-
-UniqueID()
