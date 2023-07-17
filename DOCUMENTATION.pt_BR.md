@@ -124,7 +124,7 @@ A sintaxe da lista é uma tabela Lua delimitada por chaves e os elementos podem 
 
 ## Tabelas
 
-`Lua WPP` possui integração com as tabelas nativas Lua permitindo tando a abordagem tradicional com as TAGs HTML:
+`Lua WPP` possui integração com as tabelas nativas Lua permitindo tanto a abordagem tradicional com as TAGs HTML:
 
 ```lua
 table {
@@ -162,9 +162,9 @@ table {
 }
 ```
 
-## Componentes reutilizaveis
+## Componentes reutilizáveis
 
-É possível criar componentes reutilizáveis isso permite um código mais legível e fácil de manter do lado Lua, a criação de um novo componente é feita através do método `extends` que está presente em todos os elementos, um componente permite alterar inclusive a lógica de funcionamento descrita acima, note que como os componentes vão ser pré renderizados então não deve existir sobrecarga de recurso, funciona como um copiar e colar inteligente. Para ilustar o conceito básico observe o exemplo a seguir, ele cria um componente chamado `exemplo` feito a partir de uma `div`, que injeta `minha-classe` na propriedade `class` e que adiciona um componente `p` contendo o texto "Esse vem antes" antes dos elementos filhos de `exemplo` e outro elemento `p` dessa vez com o texto "Esse vem depois":
+É possível criar componentes reutilizáveis isso permite um código mais legível e fácil de manter do lado Lua, a criação de um novo componente é feita através do método `extends` que está presente em todos os elementos, um componente permite alterar inclusive a lógica de funcionamento descrita acima, note que como os componentes vão ser prérenderizados então não deve existir sobrecarga de recurso, funciona como um copiar e colar inteligente. Para ilustrar o conceito básico observe o exemplo a seguir, ele cria um componente chamado `exemplo` feito a partir de uma `div`, que injeta `minha-classe` na propriedade `class` e que adiciona um componente `p` contendo o texto "Esse vem antes" antes dos elementos filhos de `exemplo` e outro elemento `p` dessa vez com o texto "Esse vem depois":
 
 ```lua
 exemplo = div:extends {
@@ -253,8 +253,8 @@ Irá gerar o seguinte HTML:
 Algumas observações e dicas:
 
 1. As propriedades do componente e do filho podem ser as mesmas
-2. Você pode extender componentes dentro  de `first` e `last`
-3. Você pode definir a posição do conteúdo, para  fazer com que o 2 filho de um elemento seja a propriedade `text` do componente faça:
+2. Você pode estender componentes dentro de `first` e `last`
+3. Você pode definir a posição do conteúdo, para fazer com que o filho de um elemento seja a propriedade `text` do componente faça:
 
 ```lua
 exemplo = div:extends {
@@ -290,6 +290,37 @@ Saída:
 ```
 
 > **Aviso** <br>
-> 1. Lua é uma linguagem baseada em indice 1, o indice 3 representa o terceiro elemento <br>
-> 2. Coloque todos os filhos até chegar o índice desejado, do contrário, o valor da propriedade não será transmitido
+> 1. Lua é uma linguagem baseada em índice 1, o índice 3 representa o terceiro elemento <br>
+> 2. Coloque todos os filhos até chegar o índice desejado, do contrário, o valor da propriedade não será transmitido, por exemplo:
+
+```lua
+exemplo = div:extends {
+  childrens = {
+    first = {
+       {
+          element = p {
+            'Primeiro, ', 'segundo'
+          },
+          bindings = {
+            [4] = 'text'
+          }
+       }
+    }
+  }
+}
+```
+
+```lua
+exemplo {
+  text = "quarto"
+}
+```
+
+Saída: 
+
+```html
+<div>
+  <p>Primeiro, segundo</p>
+</div>
+```
 
