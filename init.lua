@@ -1,14 +1,14 @@
 local Pages = Pages
 _ENV["Pages"] = nil
 
-local function mkdir(output,path)
+local function mkdir(path)
     -- Windows
     if package.config:sub(1,1) == "\\" then
-        os.execute('md "'..output.."/"..table.concat(path,"/",1,#path-1)..'" >nul 2>nul')
+        os.execute('md "'..path..'" >nul 2>nul')
         return
     end
     -- Any other OS in use since 2003
-    os.execute("mkdir -p '"..output.."/"..table.concat(path,"/",1,#path-1).."' >/dev/null 2>&1")
+    os.execute("mkdir -p '"..path.."' >/dev/null 2>&1")
 end
 
 local original_ENV  = {}
@@ -53,6 +53,18 @@ for i, page in original_ENV.ipairs(Pages) do
             newlib[name_] = fn
             original_ENV.setmetatable(newlib,nil)
         end
+    end
+
+    local directory = {Pages.output}
+    for folder in original_libs.string.gmatch(page,"[^/]+") do
+        directory[#directory+1] = folder
+    end
+    original_libs.table.remove(directory,#directory)
+
+    local path = original_libs.table.concat(directory,"/")
+
+    if path ~= "" then
+        mkdir(path)
     end
 
     original_ENV.require "lua-wpp-framework.LuaTML"
