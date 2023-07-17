@@ -229,6 +229,12 @@ function _ENV_metatable.__index (self,name)
 
         if self.tag:lower() == "body" and __JAVASCRIPT__ ~= "" then
           html = html..tostring(script("\n"..__JAVASCRIPT__.."\n\n"))
+          __JAVASCRIPT__ = ""
+        end
+
+        -- No body TAG, but has Javascript events, we need to fix this weird HTML
+        if __JAVASCRIPT__ ~= "" and self.tag:lower() == "html" then
+          html = html..tostring(body{script("\n"..__JAVASCRIPT__.."\n\n")})
         end
 
         return html.."</"..self.tag..">"
