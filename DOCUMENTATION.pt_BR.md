@@ -289,7 +289,7 @@ Saída:
 </div>
 ```
 
-> **Aviso** <br>
+> **Warning** <br>
 > 1. Lua é uma linguagem baseada em índice 1, o índice 3 representa o terceiro elemento <br>
 > 2. Coloque todos os filhos até chegar o índice desejado, do contrário, o valor da propriedade não será transmitido, por exemplo:
 
