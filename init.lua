@@ -104,7 +104,7 @@ for filename, content in pairs(Extension_Pages) do
     local html_file = original_libs["io"].open(Pages.output.."/"..filename,"w")
 
     if html_file then
-        html_file:write(type(content) == "string" and content or "")
+        html_file:write(tostring(content or ""))
         html_file:close()
     end
 end
