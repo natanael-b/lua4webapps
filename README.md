@@ -96,7 +96,7 @@ By running `lua5.4 Project.lua` you will have a page built on `www` with the nam
 
 # Resources
 
-Cleaner syntax alone is not enough, `Lua WPP` brings other key features ([see documentation for more details](DOCUMENTATION.en_US.md)):
+Cleaner syntax alone is not enough, `Lua WPP` brings other key features ([see documentation for more details](DOCUMENTATION.md)):
 
 ### Zero dependencies
 
