@@ -43,9 +43,56 @@ function _ENV_metatable.__index (self,name)
     tag=name,
     extends =
       function (self,descriptor)
-        local element = {tag = rawget(self,"tag"),hard_properties={}}
+        local element = {tag = rawget(self,"tag"),hard_properties={},extends=rawget(self,"extends")}
+        local base_hard_properties = rawget(self,"hard_properties") or {}
+        local base_childrens = rawget(base_hard_properties,"childrens") or {}
+        local extended_childrens = {first={bindings={}},last={bindings={}}}
+
+        descriptor.childrens = descriptor.childrens or {}
+
+        -- Elements
+
+        for i, element in ipairs(base_childrens.first or {}) do
+          extended_childrens.first[#extended_childrens.first+1] = element
+        end
+
+        for i, element in ipairs(base_childrens.last or {}) do
+          extended_childrens.last[#extended_childrens.last+1] = element
+        end
+
+        for i,element in ipairs((descriptor.childrens or {}).first or {}) do
+          extended_childrens.first[#extended_childrens.first+1] = element
+        end
+
+        for i,element in ipairs((descriptor.childrens or {}).last or {}) do
+          extended_childrens.last[#extended_childrens.last+1] = element
+        end
+
+        -- Bindings
+
+        for k,v in pairs((base_childrens.first or {}).bindings or {}) do
+          extended_childrens.first.bindings[k] = v
+        end
+
+        for k,v in pairs((base_childrens.last or {}).bindings or {}) do
+          extended_childrens.last.bindings[k] = v
+        end
+
+        for k,v in pairs((descriptor.childrens.first or {}).bindings or {}) do
+          extended_childrens.first.bindings[k] = v
+        end
+
+        for k,v in pairs((descriptor.childrens.last or {}).bindings or {}) do
+          extended_childrens.last.bindings[k] = v
+        end
+
+        descriptor.childrens = extended_childrens
+
         for property, value in pairs(descriptor) do
           if type(property) ~= "number" and type(value) == "string" then
+            if base_hard_properties[property] then
+              value = base_hard_properties[property].." "..tostring(value):gsub("\"","&quot;" )
+            end
             element.hard_properties[property] = tostring(value):gsub("\"","&quot;")
           else
             element.hard_properties[property] = value
