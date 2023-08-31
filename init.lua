@@ -84,6 +84,12 @@ for i, page in original_ENV.ipairs(Pages) do
         if Registered_Extensions["lua-wpp-framework.extensions."..name] == nil then
             Registered_Extensions["lua-wpp-framework.extensions."..name] = true
         end
+
+        if RegisterPlugin then
+            RegisterPlugin(Extension_Pages)
+        end
+        
+        RegisterPlugin = nil
     end
     original_ENV.require (Pages.sources.."."..page:gsub("/","."))
 
