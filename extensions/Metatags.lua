@@ -1,5 +1,3 @@
-
-
 local title = _ENV[{}]
 local metatable = getmetatable(title)
 
@@ -13,6 +11,10 @@ function metatable.__tostring(self)
       ::break1::
    end
 
+   if title == "" then
+      return ""
+   end
+
   return '<meta property="og:title" content="'..title:gsub('"',"&quot;")..'" />'..
          '<title>'..title:gsub("<","&lt;")..'</title>'
 end
@@ -21,7 +23,6 @@ local meta = meta
 local metatable = getmetatable(meta)
 
 local meta_tostring = metatable.__tostring
-
 
 function metatable.__tostring(self)
    local has_content = false
