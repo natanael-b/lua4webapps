@@ -39,6 +39,3 @@ Will render:
   <title>The Rock (1996)</title>
 </head>
 ```
-
-> **Note:** <br>
-> Using this extensions makes metatags with no contents to be removed
