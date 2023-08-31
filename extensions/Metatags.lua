@@ -1,5 +1,3 @@
-
-
 local title = _ENV[{}]
 local metatable = getmetatable(title)
 
@@ -46,7 +44,6 @@ head = head:extends {
                ['content'] = 'description',
             }
          },
-
          {
             element = meta {
               name="keywords"
@@ -55,7 +52,6 @@ head = head:extends {
                ['content'] = 'keywords',
             }
          },
-
          {
             element = meta {
                name="author"
@@ -64,7 +60,6 @@ head = head:extends {
                ['content'] = 'author',
             }
          },
-
          {
             element = meta {
                property="og:image"
@@ -73,7 +68,6 @@ head = head:extends {
                ['content'] = 'image',
             }
          },
-
          {
             element = meta {
                property="og:video"
@@ -82,7 +76,6 @@ head = head:extends {
                ['content'] = 'video',
             }
          },
-
          {
             element = meta {
                property="og:audio"
@@ -91,7 +84,6 @@ head = head:extends {
                ['content'] = 'audio',
             }
          },
-
          {
             element = meta {
                property="og:url"
@@ -100,7 +92,6 @@ head = head:extends {
                ['content'] = 'url',
             }
          },
-
          {
             element = title,
             bindings = {
