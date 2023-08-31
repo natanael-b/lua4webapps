@@ -6,7 +6,7 @@ This is Lua WPP's documentation, it will assume that you have prior knowledge ab
 
 A `Lua WPP` project is nothing more than a file that lists the pages of your project with a special syntax, this approach allows you to reuse pages and components in different projects, the syntax is as follows:
 
-```moon
+```lua
 Language = "pt_BR"
 
 Pages = {
@@ -33,7 +33,7 @@ Where:
 
 A generated HTML page will only have content, if and only if, it is delimited by the HTML TAG, for example a file whose content is:
 
-```moon
+```lua
 p 'Hello world'
 ```
 
@@ -41,7 +41,7 @@ Will result in a blank file
 
 If the file content is:
 
-```moon
+```lua
 html 'Hello world'
 ```
 
@@ -58,7 +58,7 @@ Hello World
 
 For the element to have properties and children, it must have its content between braces (`{` and `}`), they must be preceded by a name, followed by the equals symbol (`=`), the value must be enclosed in single quotes (`'`) or doubles (`"`) and must be separated by a comma (`,`) or semicolon (`;`), for example: to create a `div` element containing the `id property ` as `my-div` a `class` as `shadow pad` would look like this:
 
-```moon
+```lua
 div {
    id = 'my-div',
    class = 'shadow pad',
@@ -67,7 +67,7 @@ div {
 
 There are 2 ways to add children and both children must be separated by a comma (`,`) or a semicolon (`;`), if the child element has no other children or properties it can be passed with the content between single quotes (`'`) or double quotes (`"`), for example: to add the TAG `h1` containing the text `Hello world` we can do it like this
 
-```moon
+```lua
 div {
    id = 'my-div',
    class = 'shadow pad',
@@ -77,20 +77,20 @@ div {
 
 If you have it, it should have its content between braces (`{` and `}`):
 
-```moon
+```lua
 div {
    id = 'my-div',
    class = 'shadow pad',
    h1 "Hello world",
    P {
-     "I am, ", b 'Nathanael', '!'
+     "I am, ", b 'Natanael', '!'
    }
 }
 ```
 
 Attention, note that the main difference between a property and a child element is the `=` sign, this example illustrates:
 
-```moon
+```lua
 div {
    p = "This is a property called p",
    p 'This is a child element wrapped in the TAG p'
@@ -101,7 +101,7 @@ div {
 
 To repeat an element just put the asterisk sign (`*`) in front of the element followed by the quantity, immediately before the `,`:
 
-```moon
+```lua
 div {
    p 'This text will be repeated 5x' * 5,
    P {
@@ -114,7 +114,7 @@ div {
 
 To interleave values to elements use the caret sign (`^`) in front of the element followed by the list, immediately before the `,`:
 
-```moon
+```lua
 hello {
    li ^ {"Item 1","Item 2", b "Item 3","Item 4"}
 }
@@ -126,7 +126,7 @@ The list syntax is a Lua table delimited by braces and the elements can be delim
 
 `Lua WPP` has integration with native Lua tables allowing both the traditional approach with HTML tags:
 
-```moon
+```lua
 table {
    tr {
      td 'A1', td 'B1', td 'C1',
@@ -142,7 +142,7 @@ table {
 
 How much using Lua notation:
 
-```moon
+```lua
 table {
    {'A1', 'B1', 'C1'},
    {'A2', 'B2', 'C2'},
@@ -152,7 +152,7 @@ table {
 
 It is possible to use combinations, mixing HTML elements and the native Lua syntax:
 
-```moon
+```lua
 table {
    tr {
      td 'A1', td 'B1', td 'C1',
@@ -166,7 +166,7 @@ table {
 
 It is possible to create reusable components, this allows for a more readable and easy to maintain code on the Lua side, the creation of a new component is done through the `extends` method that is present in all elements, a component even allows changing the operating logic described above, note that as the components are going to be pre-rendered so there shouldn't be any resource overhead, it works like a smart copy and paste. To illustrate the basic concept look at the following example, it creates a component called `example` made from a `div`, which injectsta `my-class` in the `class` property and which adds a `p` component containing the text "This comes before" before the child elements of `example` and another `p` element this time with the text "This comes after ":
 
-```moon
+```lua
 example = div:extends {
    class = "my-class",
    childrens = {
@@ -182,7 +182,7 @@ example = div:extends {
 
 Note that element `p` "This one comes before" is inside the `first` list that is inside the list that the `childrens` property receives, the use of the component is the same as normal TAGs:
 
-```moon
+```lua
 example {
    class = "test",
    id = "experiment",
@@ -202,7 +202,7 @@ It will generate the following HTML:
 
 Now that you've seen the basics of component creation, we can see the most powerful feature of component creation, the `bindings`, bindings link a component property to a property of one of the children (whether in `first` or `last` , instead of passing the component directly as we did in the previous example, we create a Lua table with fields `element` and `bindings` using the following syntax:
 
-```moon
+```lua
 {
    element = tag {
      class = 'example'
@@ -215,7 +215,7 @@ Now that you've seen the basics of component creation, we can see the most power
 
 Let's recreate the `checkbox` from HTML 4 passing the `identifier` property and binding it with the `id` of the child element:
 
-```moon
+```lua
 checkbox = label:extends {
    childrens = {
      first = {
@@ -234,7 +234,7 @@ checkbox = label:extends {
 
 Testing:
 
-```moon
+```lua
 checkbox {
    identifier = "experiment",
    "This one comes in the middle"
@@ -243,7 +243,7 @@ checkbox {
 
 It will generate the following HTML:
 
-```html
+```lua
 <label>
    <input id="experiment" type="checkbox">
    Tag me
@@ -256,7 +256,7 @@ Some observations and tips:
 2. You can extend components inside `first` and `last`
 3. You can set the position of the content, to make the child of an element be the `text` property of the component do:
 
-```moon
+```lua
 example = div:extends {
    childrens = {
      first = {
@@ -275,7 +275,7 @@ example = div:extends {
 
 testing
 
-```moon
+```lua
 example {
    text = "Nathanael"
 }
@@ -293,7 +293,7 @@ Exit:
 > 1. Lua is a language based on index 1, index 3 represents the third element <br>
 > 2. Place all the children until the desired index is reached, otherwise the property value will not be transmitted, for example:
 
-```moon
+```lua
 example = div:extends {
    childrens = {
      first = {
@@ -310,7 +310,7 @@ example = div:extends {
 }
 ```
 
-```moon
+```lua
 example {
    text="room"
 }
@@ -328,7 +328,7 @@ Exit:
 
 `Lua WPP` maps the properties with the name starting with "on" and adds them to functions in a TAG script, this allows for greater readability of the code in the generated HTML, consider the example:
 
-```moon
+```lua
 html {
     head {
        title "test"
@@ -386,3 +386,27 @@ You can control the behavior of `Lua WPP` by passing the value `true` to the fol
 > **Note:** <br>
 > The use of these variables can lead to incorrect display of characters or to display breaks not being
 > recommended its use being present only for exceptional cases
+
+# Extensions
+
+Lua WPP has extensions that changes how HTML is written, everything you need is is add a variable on your project descriptor (e.g `Project.lua`) listing the extensions to use on projetcs before `require "lua-wpp-framework"`, like this:
+
+```lua
+Language = "pt_BR" -- Defines the default language for pages
+
+Pages = {
+   sources = "lua",
+   output="www",
+
+   'index'
+}
+
+Extensions = {
+   "GH-Pages",
+   "Metatags"
+}
+
+require "lua-wpp-framework"
+```
+
+On this example will load `GH-Pages` and `Metatags` extensions, [click here](EXTENSIONS.md)  to get a list of avaialable extensions
