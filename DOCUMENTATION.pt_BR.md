@@ -386,3 +386,28 @@ Você pode controlar o comportarmento do `Lua WPP` passando o valor `true` para 
 > **Nota:** <br>
 > O uso dessas variáveis pode levar a exibição incorreta de caracteres ou de quebras de visualização não sendo
 > recomendada a sua utilização estando presente apenas para casos excepcionais
+
+
+# Extensões
+
+Lua WPP possui extensões que mudam a forma como o HTML é escrito, tudo que você precisa é adicionar uma variável no descritor do seu projeto (por exemplo, `Project.lua`) listando as extensões para usar nos projetos antes de `require "lua-wpp-framework"`, assim:
+
+```lua
+Idioma = "pt_BR" -- Define o idioma padrão das páginas
+
+Páginas = {
+    fontes = "lua",
+    saída = "www",
+
+    'índice'
+}
+
+Extensões = {
+    "Páginas GH",
+    "Metatags"
+}
+
+requer "lua-wpp-framework"
+```
+
+Neste exemplo serão carregadas as extensões `GH-Pages` e `Metatags`, [clique aqui](EXTENSIONS.md) para obter uma lista de extensões disponíveis
