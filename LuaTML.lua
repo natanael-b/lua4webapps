@@ -98,6 +98,11 @@ function _ENV_metatable.__index (self,name)
             element.hard_properties[property] = value
           end
         end
+
+        for key, value in pairs(self) do
+          element[key] = value
+        end
+
         return setmetatable(element,getmetatable(_ENV[{}]))
       end
     ;
@@ -153,9 +158,12 @@ function _ENV_metatable.__index (self,name)
 
     __tostring =
       function (self)
-        self.tag = self.tag:lower()
+        local html = ""
 
-        local html = "<"..self.tag
+        if type(self.tag) ~= "table" then
+          self.tag = self.tag:lower()
+          html = "<"..self.tag
+        end
         
         self.properties = self.properties or {}
 
@@ -224,13 +232,13 @@ function _ENV_metatable.__index (self,name)
                     if element.tag == "td" or element.tag == "th" then
                       result = result..tostring(element)
                     else
-                      result = result.."<td>"..tostring(element).."</td>"
+                      result = result..tostring(td {tostring(element)..""})
                     end
                   else
-                    result = result.."<td>"..tostring(element).."</td>"
+                    result = result..tostring(td {tostring(element)..""})
                   end
                 end
-                innerHTML = innerHTML.."<tr>"..result.."</tr>"
+                innerHTML = innerHTML..tostring(tr {result..""})
               else
                 innerHTML = innerHTML..tostring(children)
               end
@@ -282,6 +290,7 @@ function _ENV_metatable.__index (self,name)
                   value = table.concat(value,";"):gsub("\"","&quot;")
               end
             end
+            
             html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..tostring(value):gsub("\"","&quot;").."\""
           end
         end
@@ -298,7 +307,7 @@ function _ENV_metatable.__index (self,name)
 
         html = html..">"..innerHTML
 
-        if self.tag:lower() == "body" and __JAVASCRIPT__ ~= "" then
+        if self.tag == "body" and __JAVASCRIPT__ ~= "" then
           html = html..tostring(script{type="text/javascript","\n"..__JAVASCRIPT__.."\n\n"})
           __JAVASCRIPT__ = ""
         end
@@ -309,6 +318,9 @@ function _ENV_metatable.__index (self,name)
           __JAVASCRIPT__ = ""
         end
 
+        if type(self.tag) == "table" then
+          return html
+        end
         return html.."</"..self.tag..">"
       end
     ;
