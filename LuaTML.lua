@@ -227,7 +227,7 @@ function _ENV_metatable.__index (self,name)
             if content == self.properties then
               if type(children) == "table" and getmetatable(children) == nil and self.tag == "table" then
                 local result = ""
-                for i,element  in ipairs(children) do
+                for _,element  in ipairs(children) do
                   if type(element) == "table" then
                     if element.tag == "td" or element.tag == "th" then
                       result = result..tostring(element)
@@ -239,6 +239,10 @@ function _ENV_metatable.__index (self,name)
                   end
                 end
                 innerHTML = innerHTML..tostring(tr {result..""})
+              elseif type(children) == "table" and getmetatable(children) == nil and self.tag == "select" then
+                  innerHTML = innerHTML..tostring(option {value=tostring(children[1]),tostring(children[2])..""})
+              elseif type(children) == "string" and self.tag == "select" then
+                  innerHTML = innerHTML..tostring(option{value=tostring(i).."",children})
               else
                 innerHTML = innerHTML..tostring(children)
               end
@@ -356,3 +360,18 @@ setmetatable(_ENV,_ENV_metatable)
 table.tag='table'
 table.extends = rawget(_ENV[{}],"extends")
 setmetatable(table,getmetatable(_ENV[{}]))
+
+local lua_select = select
+
+select = _ENV[{}]
+select.tag = "select"
+
+local select_meta = getmetatable(select)
+local select_call = select_meta.__call
+
+function select_meta.__call(self,...)
+  if type(({...})[1]) == "number" then
+    return lua_select(...)
+  end
+  return select_call(self,...)
+end
