@@ -23,6 +23,25 @@ UniqueID = setmetatable(UniqueID,{
 })
 UniqueID()
 
+local self_closable_tags = {
+  area    = true,
+  base    = true,
+  br      = true,
+  col     = true,
+  command = true,
+  embed   = true,
+  hr      = true,
+  img     = true,
+  input   = true,
+  keygen  = true,
+  link    = true,
+  meta    = true,
+  param   = true,
+  source  = true,
+  track   = true,
+  wbr     = true,
+}
+
 local _ENV_metatable = getmetatable(_ENV) or {}
 _PROMPT = _ENV["_PROMT"] or "> "  -- Prevent from changing prompt on interactive mode
 __JAVASCRIPT__ = ""
@@ -155,8 +174,9 @@ function _ENV_metatable.__index (self,name)
       function (self)
         local html = ""
 
+        self.tag = self.tag:lower()
+
         if type(self.tag) ~= "table" then
-          self.tag = self.tag:lower()
           html = "<"..self.tag
         end
         
@@ -306,7 +326,7 @@ function _ENV_metatable.__index (self,name)
       
         self.hard_properties.childrens = self.childrens
 
-        if (#(self.properties or {}) == 0) and self.tag:lower() ~= "script" and self.tag:lower() ~= "html" and #self.childrens.first+#self.childrens.first == 0 then
+        if (#(self.properties or {}) == 0) and self_closable_tags[self.tag] and #self.childrens.first+#self.childrens.first == 0 then
           return html.."/>"
         end
 
@@ -318,7 +338,7 @@ function _ENV_metatable.__index (self,name)
         end
 
         -- No body TAG, but has Javascript events, we need to fix this weird HTML
-        if __JAVASCRIPT__ ~= "" and self.tag:lower() == "html" then
+        if __JAVASCRIPT__ ~= "" and self.tag == "html" then
           html = html.."<body>"..tostring(script{type="text/javascript","\n"..__JAVASCRIPT__.."\n\n"}).."</body>"
           __JAVASCRIPT__ = ""
         end
