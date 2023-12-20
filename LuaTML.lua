@@ -21,15 +21,10 @@ UniqueID = setmetatable(UniqueID,{
     end
   ;
 })
-
 UniqueID()
 
-
-
 local _ENV_metatable = getmetatable(_ENV) or {}
-
 _PROMPT = _ENV["_PROMT"] or "> "  -- Prevent from changing prompt on interactive mode
-
 __JAVASCRIPT__ = ""
 
 function _ENV_metatable.__index (self,name)
@@ -281,22 +276,28 @@ function _ENV_metatable.__index (self,name)
           end
         end
 
-        for property, value in pairs(self.properties or {}) do
+        local self_properties = {}
+        for property, _ in pairs(self.properties or {}) do
           if type(property) ~= "number" then
-            if type(value) and getmetatable(value) == nil and property:sub(1,2) == "on" then
-              if type(__JAVASCRIPT__) == "string" then
-                local function_name = "when_"..property:sub(3,-1).."_on_"..self.properties.id.."()"
-                __JAVASCRIPT__ = __JAVASCRIPT__.."\n\n\nfunction "..function_name.." {\n"
-                __JAVASCRIPT__ = __JAVASCRIPT__.."  var self = event.target;\n\n  "
-                __JAVASCRIPT__ = __JAVASCRIPT__..table.concat(value,";\n  ").."\n}"
-                value = function_name..";"
-              else
-                  value = table.concat(value,";"):gsub("\"","&quot;")
-              end
-            end
-            
-            html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..tostring(value):gsub("\"","&quot;").."\""
+            self_properties[#self_properties+1] = property
           end
+        end
+        table.sort(self_properties)
+
+        for _,property in ipairs(self_properties) do
+          local value = (self.properties or {})[property]
+          if getmetatable(value) == nil and property:sub(1,2) == "on" then
+            if type(__JAVASCRIPT__) == "string" then
+              local function_name = "when_"..property:sub(3,-1).."_on_"..self.properties.id.."()"
+              __JAVASCRIPT__ = __JAVASCRIPT__.."\n\n\nfunction "..function_name.." {\n"
+              __JAVASCRIPT__ = __JAVASCRIPT__.."  var self = event.target;\n\n  "
+              __JAVASCRIPT__ = __JAVASCRIPT__..table.concat(value,";\n  ").."\n}"
+              value = function_name..";"
+            else
+                value = table.concat(value,";"):gsub("\"","&quot;")
+            end
+          end
+          html = html.." "..property.."=\""..(self.hard_properties[property] and self.hard_properties[property].." " or "")..tostring(value):gsub("\"","&quot;").."\""
         end
 
         for property, value in pairs(hard_properties) do
